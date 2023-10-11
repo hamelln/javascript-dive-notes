@@ -48,4 +48,131 @@ Chrome 브라우저와 Node.js는 둘 다 V8 엔진을 쓰지만 런타임이 �
 > “파싱을 위해 낱말로 나누다.”
 
 렉싱(lexing), 스캐닝(scanning)이라고도 부르며 이 단계를 담당하는 곳을 어휘 분석기(lexical analyzer), 스캐너(scanner), 렉서(lexer), 토크나이저(tokenizer) 등으로 부릅니다.	
-JS 코드는 다운로드 시 처음엔 긴 문자열로 전달됩니다.  
+JS 코드는 처음엔 긴 문자열로 전달되고, 이후로 여러 단계를 거쳐 코드로 변환되고 실행됩니다.
+
+```javascript
+// 개발 코드
+const count = 0;
+function handleClick(){
+  count++;
+  console.log(count);
+}
+
+// 클라이언트가 받는 스크립트 문자열
+"const count=0;\n function handleClick(){\n count++;\n console.log(count);\n}\n"
+```
+
+렉서는 문자열을 스캔해서 토큰(문법적으로 유의미한 가장 작은 단위의 말)들로 분류합니다. 자세한 예시로 확인해봅시다.  
+
+```javascript
+const a = b / 10 + "a";
+```
+
+위 코드는 문자열로 변환 후, 렉서를 통해 아래와 같은 토큰들로 변환됩니다.
+```text
+ const
+a
+=
+b 
+/ 
+10 
++ 
+"a"
+```
+
+토큰은 일반 토큰과 특수 토큰 등, 분류가 있습니다. C같은 언어는 아래와 같이 분류합니다.
+
+ <table style="background-color: #2d2d2d; color:#ccc;" >
+<thead>
+<tr >
+<th style="text-align: center">일반 토큰</th>
+<th style="text-align: center">특수 토큰(예약어)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center">a (식별자)</td>
+<td style="text-align: center">const (지정어)</td>
+</tr>
+<tr>
+<td style="text-align: center">b (식별자)</td>
+<td style="text-align: center">= (연산자)</td>
+</tr>
+<tr>
+<td style="text-align: center">10 (리터럴)</td>
+<td style="text-align: center">/ (연산자)</td>
+</tr>
+<tr>
+<td style="text-align: center">"a" (리터럴)</td>
+<td style="text-align: center">+ (연산자)</td>
+</tr>
+</tbody>
+</table>
+
+JavaScript는 아래와 같이 분류합니다.
+
+<table style="background-color: #2d2d2d; color:#ccc;" >
+<thead>
+<tr>
+<th style="text-align: center">일반 토큰</th>
+<th style="text-align: center">특수 토큰</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center">const (예약어)</td>
+<td style="text-align: center"></td>
+</tr>
+<tr>
+<td style="text-align: center">a (식별자)</td>
+<td style="text-align: center"></td>
+</tr>
+<tr>
+<td style="text-align: center">= (부호)</td>
+<td style="text-align: center"></td>
+</tr>
+<tr>
+<td style="text-align: center">b (식별자)</td>
+<td style="text-align: center">/ (나누기 부호)</td>
+</tr>
+<tr>
+<td style="text-align: center">10 (숫자 리터럴)</td>
+<td style="text-align: center"></td>
+</tr>
+<tr>
+<td style="text-align: center">+ (부호)</td>
+<td style="text-align: center"></td>
+</tr>
+<tr>
+<td style="text-align: center">"a" (문자열 리터럴)</td>
+<td style="text-align: center"></td>
+</tr>
+</tbody>
+</table>
+
+- 특수 토큰은 나누기, 정규 표현식 리터럴// 등이 있는데 소수이고, 나머지는 전부 일반 토큰입니다. 
+- 예약어는 식별자 명으로 사용 못합니다.
+- 지정어(keyword)는 그 언어체계에서 특별한 의미를 가진 단어입니다. (if, while 등은 지정어 & 예약어. 하지만 지정어 === 예약어는 아닙니다.)
+- 일부 예약어는 식별자 명으로 사용 가능합니다. (await는 async 함수 밖에서는 변수 이름으로 사용 가능)
+- let은 예약어가 아닙니다.
+- 예약어가 아니지만 strict 모드에서 식별자 명으로 못 쓰는 말이 있습니다(let, static, implements, interface, package, private, protected, public 등...)
+- implements, private 같은 몇몇 단어는 future reserved words(예약 예정어)입니다.
+
+```javascript
+// strict 모드가 아니면 사용 OK
+var let = 123;
+
+// 사용 불가
+let let = 123;
+const let = 123;
+```
+
+### lexical scope
+
+렉싱 단계에서는 식별자의 lexical scope를 정의합니다.  
+
+> 식별자가 선언된 곳을 기준으로 정의한 식별자의 유효 범위. 	 
+정적 영역(static scope)이라고도 부르는데, 호출한 곳을 기준으로 스코프를 정의하는 동적 영역(dynamic scope)과 대비됩니다. 대부분 현대 언어들은 정적 영역을 사용합니다.
+
+렉싱 단계에서 토큰은 고유 번호와 값을 부여받고 파서로 전달됩니다.  
+
