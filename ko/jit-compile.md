@@ -46,8 +46,7 @@ JIT 컴파일과 대비되는 개념으로 AOT(Ahead-of-Time) 컴파일이 있�
 Chrome 브라우저와 Node.js는 둘 다 V8 엔진을 쓰지만 런타임이 다릅니다. Chrome은 window, DOM 객체 등을 쓰고, Node에선 buffer, require, processes 등을 제공합니다. 	
 브라우저에서 개발자 도구를 켜고 require를 입력해보면 찾을 수 없는 반면, Node.js를 설치한 VSCode에서 require를 쓰면 해당 API를 찾을 수 있습니다.
 
-### 어휘 분석(Lexical Analysis)
-> “파싱을 위해 낱말로 나누다.”
+### Lexical Analysis
 
 렉싱(lexing), 스캐닝(scanning)이라고도 부르며 이 단계를 담당하는 곳을 어휘 분석기(lexical analyzer), 스캐너(scanner), 렉서(lexer), 토크나이저(tokenizer) 등으로 부릅니다.	
 JS 코드는 처음엔 긴 문자열로 전달되고, 이후로 여러 단계를 거쳐 코드로 변환되고 실행됩니다.
@@ -64,13 +63,13 @@ function handleClick(){
 "const count=0;\n function handleClick(){\n count++;\n console.log(count);\n}\n"
 ```
 
-렉서는 문자열을 스캔해서 토큰(문법적으로 유의미한 가장 작은 단위의 말)들로 분류합니다. 자세한 예시로 확인해봅시다.  
+렉서는 문자열을 스캔해서 토큰(시스템 문법적으로 가장 작은 단위의 낱말)들로 분류합니다. 간단한 예시로 확인해봅시다.  
 
 ```javascript
 const a = b / 10 + "a";
 ```
 
-위 코드는 문자열로 변환 후, 렉서를 통해 아래와 같은 토큰들로 변환됩니다.
+위 코드는 렉서를 통해 아래와 같은 토큰들로 변환됩니다.
 ```text
  const
 a
